@@ -14,7 +14,8 @@ function App() {
   
   useEffect(()=>{
     socket.on("connect", ()=>{
-      setIsConnected(true); 
+      setIsConnected(true);
+      sessionStorage.getItem("socketChatUsername") != undefined && newNameFunc(JSON.parse(sessionStorage.socketChatUsername))
       console.log(socket.id)
     })
     socket.on("disconnect", ()=>{
@@ -67,11 +68,13 @@ function App() {
   function newNameFunc(newName) {
       socket.emit("join lobby", newName)
       setMyUsernames([newName]);
+      sessionStorage.setItem("socketChatUsername", JSON.stringify(newName))
       setIsNamed(true)
   }
 
-  function changNameFunc(newName) {
+  function changeNameFunc(newName) {
       socket.emit("change username", newName);
+      sessionStorage.setItem("socketChatUsername", JSON.stringify(newName))
       setMyUsernames([newName, ...myUsernames]);
   }
   
@@ -101,7 +104,7 @@ function App() {
                 <small id='welcomeMsg'>Welcome to our Socket Space!</small><br></br>
                 <small id='userCount'>{totalUsers} {totalUsers > 1 ? "users" : "user"} chatting</small>
               </div>
-              <form id='nameHandler' onSubmit={(e)=> {handleName(e, changNameFunc)}}> 
+              <form id='nameHandler' onSubmit={(e)=> {handleName(e, changeNameFunc)}}> 
                 <input id='userName' name='userName' placeholder='Change username...' />
                 <button type='submit'>Change</button>
               </form>
